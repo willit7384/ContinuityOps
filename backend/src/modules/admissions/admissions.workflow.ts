@@ -30,33 +30,36 @@ export async function approveAdmission(
       },
     });
 
-    // 2️⃣ Create enrollment (idempotent)
-    await tx.enrollment.upsert({
-      where: {
-        userId_term: {
-          userId: admission.userId,
-          term: admission.term,
-        },
-      },
-      update: {},
-      create: {
-        userId: admission.userId,
-        term: admission.term,
-      },
-    });
+// 2️⃣ Create enrollment (idempotent)
+const existing = await tx.enrollment.findFirst({
+  where: {
+    userId: admission.userId,
+    term: admission.term,
+  },
+});
 
-    // 3️⃣ Audit
-    await logAudit({
-      actorId: adminId,
-      action: "ADMISSION_ACCEPTED",
-      targetId: admissionId,
-      metadata: {
-        userId: admission.userId,
-        term: admission.term,
-        enrollmentCreated: true,
-      },
-    });
-
-    return updatedAdmission;
+if (!existing) {
+  await tx.enrollment.create({
+    data: {
+      userId: admission.userId,
+      term: admission.term,
+    },
   });
+}
+
+
+// 3️⃣ Audit
+await logAudit({
+  actorId: adminId,
+  action: "ADMISSION_ACCEPTED",
+  targetId: admissionId,
+  metadata: {
+    userId: admission.userId,
+    term: admission.term,
+    enrollmentCreated: true,
+  },
+});
+
+return updatedAdmission;
+});
 }

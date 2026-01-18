@@ -7,12 +7,14 @@ import {
   getEnrollmentById,
   updateEnrollmentStatus,
 } from "./enrollment.controller.js";
+import { blockSuspendedUser } from "../../middlewares/suspension.middleware.js";
 
 const router = Router();
 
 router.post(
   "/",
   verifyToken,
+  blockSuspendedUser,
   requireRole(["ADMIN"]),
   createEnrollment
 );
@@ -20,6 +22,7 @@ router.post(
 router.get(
   "/",
   verifyToken,
+  blockSuspendedUser,
   requireRole(["ADMIN"]),
   getEnrollments
 );
@@ -27,6 +30,7 @@ router.get(
 router.get(
   "/:id",
   verifyToken,
+  blockSuspendedUser,
   requireRole(["ADMIN"]),
   getEnrollmentById
 );
@@ -34,6 +38,7 @@ router.get(
 router.patch(
   "/:id/status",
   verifyToken,
+  blockSuspendedUser,
   requireRole(["ADMIN"]),
   updateEnrollmentStatus
 );

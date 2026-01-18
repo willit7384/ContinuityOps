@@ -14,8 +14,11 @@ model User {
   firstName String
   lastName  String
   role      Role     @default(STUDENT)
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  suspended Boolean  @default(false)
 
   student   Student?
   counselor Counselor?
@@ -48,15 +51,16 @@ model Admission {
 }
 
 model Enrollment {
-  id        String   @id @default(uuid())
-  userId    String
-  term      String
+  id     String @id @default(uuid())
+  userId String
+  term   String
   status    EnrollmentStatus @default(PENDING)
-
-  user      User     @relation(fields: [userId], references: [id])
+  
+  user   User   @relation(fields: [userId], references: [id])
 
   @@unique([userId, term], name: "user_term_unique")
 }
+
 
 
 enum AdmissionStatus {
