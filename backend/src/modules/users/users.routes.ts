@@ -1,13 +1,15 @@
-import { Router } from "express";
+import express from "express";
+import { createUserController, listUsersController, updateRoleController, suspendUserController, loginController } from "./users.controller.js";
 import { verifyToken } from "../../middlewares/auth.middleware.js";
-import { requireRole } from "../../middlewares/role.middleware.js";
-import { getMe, getAllUsers } from "./users.controller.js";
 
-const router = Router();
+const router = express.Router();
 
-router.get("/me", verifyToken, getMe);
+router.post("/register", createUserController);
+router.post("/login", loginController);
 
-// Admin-only
-router.get("/", verifyToken, requireRole("ADMIN"), getAllUsers);
+router.use(verifyToken); // all routes below require auth
+router.get("/", listUsersController);
+router.patch("/:id/role", updateRoleController);
+router.patch("/:id/suspend", suspendUserController);
 
 export default router;

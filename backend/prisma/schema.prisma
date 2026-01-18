@@ -8,25 +8,76 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  password   String
-  firstName  String
-  lastName   String
-  role       Role     @default(STUDENT)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  student    Student?
-  counselor  Counselor?
-  admin      Admin?
+  student   Student?
+  counselor Counselor?
+  admin     Admin?
+
+  auditLogs   AuditLog[]   @relation("UserAuditLogs")
+  admissions  Admission[]
+  enrollments Enrollment[]
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actorId   String
+  actor     User     @relation("UserAuditLogs", fields: [actorId], references: [id])
+  action    String
+  targetId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
+
+model Admission {
+  id        String          @id @default(uuid())
+  userId    String
+  user      User            @relation(fields: [userId], references: [id])
+  program   String
+  term      String
+  status    AdmissionStatus @default(PENDING)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  term      String
+  status    EnrollmentStatus @default(PENDING)
+
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, term], name: "user_term_unique")
+}
+
+
+enum AdmissionStatus {
+  PENDING
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+}
+
+enum EnrollmentStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  DROPPED
 }
 
 model Student {
-  id        String  @id @default(uuid())
-  userId    String  @unique
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status    Status  @default(PENDING)
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status Status @default(PENDING)
 }
 
 model Counselor {

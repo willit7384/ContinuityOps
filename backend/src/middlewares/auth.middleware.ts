@@ -1,51 +1,39 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   user?: {
-    userId: string;
+    id: string;
     role: string;
   };
 }
 
 export const verifyToken = (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: "Missing token" });
 
-  if (!authHeader) {
-    return res.status(401).json({ message: "No token provided." });
-  }
-
-  const parts = authHeader.split(" ");
-
-  if (parts.length !== 2 || parts[0] !== "Bearer") {
-    return res.status(401).json({ message: "Invalid auth format." });
-  }
-
-  const token = parts[1]; // ✅ THIS WAS MISSING
-
-  if (!token) {
-    return res.status(401).json({ message: "Token missing." });
-  }
-
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    return res.status(500).json({ message: "JWT_SECRET not defined." });
-  }
+  const token = authHeader.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "Malformed token" });
 
   try {
-    const decoded = jwt.verify(token, secret) as JwtPayload;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+
+    if (!decoded || typeof decoded !== "object") {
+      return res.status(401).json({ error: "Invalid token payload" });
+    }
 
     req.user = {
-      userId: decoded.userId as string,
+      id: decoded.id as string,
       role: decoded.role as string,
     };
 
     next();
   } catch {
-    return res.status(401).json({ message: "Invalid token." });
+    return res.status(401).json({ error: "Invalid token" });
   }
 };
+

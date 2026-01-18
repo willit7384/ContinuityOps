@@ -1,14 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 
-export const requireRole = (role: string) => {
+export const requireRole = (roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const user = (req as any).user;
+    const userRole = (req as any).user?.role;
 
-    if (!user) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-
-    if (user.role !== role) {
+    if (!userRole || !roles.includes(userRole)) {
       return res.status(403).json({ message: "Forbidden" });
     }
 

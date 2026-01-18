@@ -1,14 +1,19 @@
 import express from "express";
 import authRoutes from "./modules/auth/auth.routes.js";
-import usersRouter from "./modules/users/users.routes.js";
+import usersRoutes from "./modules/users/users.routes.js";
+import adminRoutes from "./modules/admin/admin.routes.js";
+import admissionsRoutes from "./modules/admissions/admissions.routes.js";
+import enrollmentRoutes from "./modules/enrollment/enrollment.routes.js";
+import adminAuthRoutes from "./modules/admin/admin.auth.routes.js";
 
 const app = express();
 
+app.use("/api/admin/auth", adminAuthRoutes);
 app.use(express.json());
-
 app.use("/api/auth", authRoutes);
-
-// 👉 Add this line:
-app.use("/api/users", usersRouter);
+app.use("/api/users", usersRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/admissions", admissionsRoutes);
+app.use("/api/enrollment", enrollmentRoutes);
 
 export default app;
