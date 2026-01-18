@@ -2,26 +2,20 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma.js";
 
 export const getMe = async (req: Request, res: Response) => {
-  try {
-    const userId = (req as any).user?.userId;
+  const user = (req as any).user;
+  res.json(user);
+};
 
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+export const getAllUsers = async (req: Request, res: Response) => {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      role: true,
+    },
+  });
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-      },
-    });
-
-    res.json(user);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
+  res.json(users);
 };
