@@ -27,8 +27,8 @@ export const verifyToken = (
     }
 
     req.user = {
-      id: decoded.id as string,
-      role: decoded.role as string,
+      id: decoded.userId,
+      role: decoded.role,
     };
 
     next();

@@ -81,7 +81,7 @@ export const suspendUserController = async (req: Request, res: Response) => {
 
   await prisma.user.update({
     where: { id: userId },
-    data: { isSuspended: true },
+    data: { suspended: true },
   });
 
   return res.json({ message: "User suspended" });

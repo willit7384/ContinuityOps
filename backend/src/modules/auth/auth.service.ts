@@ -32,15 +32,19 @@ export const loginUser = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) throw new Error("Invalid credentials");
 
+  // 🔒 BLOCK SUSPENDED USERS
+  if (user.suspended) {
+    throw new Error("Account suspended. Contact admin.");
+  }
+
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) throw new Error("Invalid credentials");
 
   const token = jwt.sign(
-  { userId: user.id, role: user.role },
-  JWT_SECRET,
-  { expiresIn: JWT_EXPIRES_IN }
-);
-
+    { userId: user.id, role: user.role },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES_IN }
+  );
 
   return { token, user };
 };
