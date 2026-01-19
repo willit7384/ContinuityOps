@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma.js";
 import { logAudit } from "./audit.service.js";
 import { AuthRequest } from "../../middlewares/auth.middleware.js";
+import { getAuditLogs } from "./admin.service.js";
 
 /**
  * GET /api/admin/users
@@ -58,4 +59,12 @@ export const updateUserRole = async (req: AuthRequest, res: Response) => {
       role: updatedUser.role,
     },
   });
+};
+
+export const listAuditLogs = async (req: Request, res: Response) => {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 25;
+
+  const result = await getAuditLogs(page, limit);
+  res.json(result);
 };

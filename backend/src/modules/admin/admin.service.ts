@@ -1,9 +1,36 @@
 import { prisma } from "../../lib/prisma.js";
-import { Role } from "@prisma/client";
 
-export const updateUserRole = async (userId: string, role: Role) => {
-  return prisma.user.update({
-    where: { id: userId },
-    data: { role },
-  });
+export const getAuditLogs = async (
+  page = 1,
+  limit = 25
+) => {
+  const skip = (page - 1) * limit;
+
+  const [logs, total] = await Promise.all([
+    prisma.auditLog.findMany({
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+      include: {
+        actor: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    }),
+    prisma.auditLog.count(),
+  ]);
+
+  return {
+    data: logs,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };

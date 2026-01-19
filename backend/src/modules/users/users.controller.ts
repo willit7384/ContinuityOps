@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma.js";
 import { Role } from "@prisma/client";
 import { hashPassword } from "../../utils/hash.js";
+import { logAudit } from "../admin/audit.service.js";
 
 /**
  * POST /api/users
@@ -74,17 +75,28 @@ export const updateRoleController = async (req: Request, res: Response) => {
  */
 export const suspendUserController = async (req: Request, res: Response) => {
   const userId = req.params.id;
+  const adminId = (req as any).user?.id;
 
   if (!userId) {
     return res.status(400).json({ message: "User ID required" });
   }
 
-  await prisma.user.update({
+  if (userId === adminId) {
+    return res.status(400).json({ message: "Cannot suspend yourself" });
+  }
+
+  const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: { suspended: true },
   });
 
-  return res.json({ message: "User suspended" });
+  await logAudit({
+    actorId: adminId,
+    action: "USER_SUSPENDED",
+    targetId: userId,
+  });
+
+  return res.json(updatedUser);
 };
 
 /**
@@ -92,4 +104,36 @@ export const suspendUserController = async (req: Request, res: Response) => {
  */
 export const loginController = async (req: Request, res: Response) => {
   return res.status(501).json({ message: "Login not implemented here" });
+};
+
+export const getMe = async (req: Request, res: Response) => {
+  const user = await prisma.user.findUnique({
+    where: { id: (req as any).user.id },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      status: true,
+      createdAt: true,
+    },
+  });
+
+  res.json(user);
+};
+
+export const updateMe = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const updated = await prisma.user.update({
+    where: { id: (req as any).user.id },
+    data: { email },
+  });
+
+  await logAudit({
+    actorId: (req as any).user.id,
+    action: "USER_UPDATED_SELF",
+    targetId: (req as any).user.id,
+  });
+
+  res.json(updated);
 };

@@ -8,23 +8,23 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String @id @default(uuid())
+  email     String @unique
   password  String
   firstName String
   lastName  String
-  role      Role     @default(STUDENT)
-  
+  role      Role   @default(STUDENT)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  suspended Boolean  @default(false)
+  suspended Boolean @default(false)
 
   student   Student?
   counselor Counselor?
   admin     Admin?
 
-  auditLogs   AuditLog[]   @relation("UserAuditLogs")
+  auditLogs   AuditLog[]
   admissions  Admission[]
   enrollments Enrollment[]
 }
@@ -32,11 +32,12 @@ model User {
 model AuditLog {
   id        String   @id @default(uuid())
   actorId   String
-  actor     User     @relation("UserAuditLogs", fields: [actorId], references: [id])
   action    String
   targetId  String?
   metadata  Json?
   createdAt DateTime @default(now())
+
+  actor User @relation(fields: [actorId], references: [id])
 }
 
 model Admission {
@@ -51,17 +52,15 @@ model Admission {
 }
 
 model Enrollment {
-  id     String @id @default(uuid())
+  id     String           @id @default(uuid())
   userId String
   term   String
-  status    EnrollmentStatus @default(PENDING)
-  
-  user   User   @relation(fields: [userId], references: [id])
+  status EnrollmentStatus @default(PENDING)
+
+  user User @relation(fields: [userId], references: [id])
 
   @@unique([userId, term], name: "user_term_unique")
 }
-
-
 
 enum AdmissionStatus {
   PENDING
