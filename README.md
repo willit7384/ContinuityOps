@@ -1,18 +1,16 @@
 # ContinuityOps
-I built ContinuityOps, a lightweight internal workflow tool for tracking critical IT systems, managing incidents, and generating recovery tasks. It’s fully async, backed by MySQL, and Dockerized for consistent deployment. The project demonstrates my ability to translate operational workflows into software solutions.
+I built ContinuityOps, a lightweight internal enterprise workflow tool made for a simulated university called DataU. This tool is made for  student and faculty account management purposes. It’s fully async, backed by MySQL, and Dockerized for consistent deployment. The project demonstrates my ability to translate operational workflows into software solutions.
 
 Project Overview – “Internal workflow automation for IT continuity”
 
 Problem Statement – “Tracking critical systems and managing incidents efficiently”
 
-Tech Stack – Node.js, Express, async/await, MySQL, React, Docker
+Tech Stack – Node.js, Express, async/await, MySQL, React, Docker, Prisma ORM, BCrypt, etc.
 
-Architecture Diagram – Visual async workflow diagram
+Features – 
 
-Features – List all tables + modules
+Setup Instructions – 
 
-Setup Instructions – Docker build/run, ports, env vars
+Screenshots – 
 
-Screenshots – Dashboard, incident form, recovery tasks
-
-Optional Notes – “Inspired by BCP/BIA coursework, applied concepts to software workflows”
+Optional Notes – 
