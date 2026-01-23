@@ -1,16 +1,23 @@
+// This file defines the routes for admissions-related operations
+
+// Express router
 import { Router } from "express";
+// Authentication middleware
 import { verifyToken } from "../../middlewares/auth.middleware.js";
+// Role-based access control middleware
 import { requireRole } from "../../middlewares/role.middleware.js";
+// Admissions controllers
 import {
   createAdmission,
   getAdmissions,
   getAdmissionById,
   updateAdmissionStatus,
 } from "./admissions.controller.js";
+// Suspension middleware
 import { blockSuspendedUser } from "../../middlewares/suspension.middleware.js";
-
+// Create router
 const router = Router();
-
+// Create a new admission
 router.post(
   "/",
   verifyToken,
@@ -18,7 +25,7 @@ router.post(
   requireRole(["ADMIN"]),
   createAdmission
 );
-
+// Get all admissions
 router.get(
   "/",
   verifyToken,
@@ -26,7 +33,7 @@ router.get(
   requireRole(["ADMIN"]),
   getAdmissions
 );
-
+// Get admission by ID
 router.get(
   "/:id",
   verifyToken,
@@ -34,7 +41,7 @@ router.get(
   requireRole(["ADMIN"]),
   getAdmissionById
 );
-
+// Update admission status
 router.patch(
   "/:id/status",
   verifyToken,
@@ -42,5 +49,5 @@ router.patch(
   requireRole(["ADMIN"]),
   updateAdmissionStatus
 );
-
+// Export router
 export default router;

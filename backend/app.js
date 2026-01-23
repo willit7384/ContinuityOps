@@ -1,11 +1,19 @@
+// This file sets up the Express application with routes and database connection
+
+// Import dependencies
 import express from 'express';
+// MySQL promise-based client
 import mysql from 'mysql2/promise';
+// Load environment variables from .env file
 import dotenv from 'dotenv';
 
+// Initialize environment variables
 dotenv.config();
+// Create Express app
 const app = express();
-app.use(express.json());
+app.use(express.json()); // JSON body parser middleware for REST API
 
+// Create MySQL connection pool
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -45,12 +53,12 @@ app.post('/incidents', async (req, res) => {
       [system_id, description, severity]
     );
 
-    // Auto-create a recovery task (example async workflow)
+// Auto-create a recovery task (example async workflow)
     await pool.query(
       'INSERT INTO recovery_tasks (incident_id, description, assigned_to) VALUES (?, ?, ?)',
       [result.insertId, 'Initial assessment of incident', 'IT Team']
     );
-
+// Respond with the new incident ID
     res.status(201).json({ id: result.insertId });
   } catch (err) {
     res.status(500).json({ error: err.message });

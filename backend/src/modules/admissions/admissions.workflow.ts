@@ -1,7 +1,12 @@
-import { prisma } from "../../lib/prisma.js";
-import { logAudit } from "../admin/audit.service.js";
-import { $Enums } from "@prisma/client";
+// This file contains workflow functions for admissions
 
+// Prisma client
+import { prisma } from "../../lib/prisma.js";
+// Audit logging service
+import { logAudit } from "../admin/audit.service.js";
+// Prisma Enums: for status values
+import { $Enums } from "@prisma/client";
+// Approve an admission application
 export async function approveAdmission(
   admissionId: string,
   adminId: string
@@ -10,7 +15,7 @@ export async function approveAdmission(
     const admission = await tx.admission.findUnique({
       where: { id: admissionId },
     });
-
+// Validation
     if (!admission) {
       throw new Error("Admission not found");
     }
@@ -22,7 +27,7 @@ export async function approveAdmission(
       );
     }
 
-    // 1️⃣ Update admission status
+    // Update admission status
     const updatedAdmission = await tx.admission.update({
       where: { id: admissionId },
       data: {
@@ -30,14 +35,14 @@ export async function approveAdmission(
       },
     });
 
-// 2️⃣ Create enrollment (idempotent)
+// Create enrollment (idempotent)
 const existing = await tx.enrollment.findFirst({
   where: {
     userId: admission.userId,
     term: admission.term,
   },
 });
-
+// If no existing enrollment, create one
 if (!existing) {
   await tx.enrollment.create({
     data: {
@@ -48,7 +53,7 @@ if (!existing) {
 }
 
 
-// 3️⃣ Audit
+// Audit log for admission approval
 await logAudit({
   actorId: adminId,
   action: "ADMISSION_ACCEPTED",
@@ -59,7 +64,7 @@ await logAudit({
     enrollmentCreated: true,
   },
 });
-
+// Return updated admission
 return updatedAdmission;
 });
 }

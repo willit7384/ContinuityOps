@@ -1,9 +1,40 @@
-import AuditLogsClient from "./AuditLogsClient";
+"use client";
 
-export default async function AuditLogsPage() {
-  const logs = await fetch("http://localhost:5000/api/audit-logs", {
-    cache: "no-store",
-  }).then((res) => res.json());
+import { api } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 
-  return <AuditLogsClient initialLogs={logs} />;
+type AuditLog = {
+  id: string;
+  action: string;
+  createdAt: string;
+  actor?: {
+    email: string;
+  };
+};
+
+type AuditLogResponse = {
+  data: AuditLog[];
+};
+
+export default function AuditLogsPage() {
+  const { data, isLoading, error } = useQuery<AuditLogResponse>({
+    queryKey: ["auditLogs"],
+    queryFn: () => api.get<AuditLogResponse>("/api/admin/audit-logs"),
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading audit logs</div>;
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Audit Logs</h1>
+
+      {data?.data.map((log) => (
+        <div key={log.id}>
+          {log.action} —{" "}
+          {new Date(log.createdAt).toLocaleString()}
+        </div>
+      ))}
+    </div>
+  );
 }
