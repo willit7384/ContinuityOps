@@ -1,4 +1,4 @@
-// This file contains utility functions for hashing and verifying passwords
+// This file contains utility functions for hashing and verifying passwords 
 
 // Bcrypt library for hashing
 import bcrypt from "bcrypt";

@@ -1,5 +1,6 @@
-// Admin authentication controller: This controller handles admin login functionality
+// Admin authentication controller: This controller handles admin login functionality 
 
+// Express types
 import { Request, Response } from "express";
 // Prisma client
 import { prisma } from "../../lib/prisma.js";
@@ -11,7 +12,8 @@ import jwt from "jsonwebtoken";
 import { logAudit } from "./audit.service.js";
 
 
-// Admin login controller
+// Admin login controller: uses async, meaning it handles asynchronous operations like database queries and password verification.
+// asynchronous simply means that the function can perform tasks that take time to complete (like waiting for a database response) without blocking the execution of other code.
 export const adminLoginController = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 // Validate input

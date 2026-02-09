@@ -11,7 +11,7 @@ export interface AuthRequest extends Request {
     id: string;
     role: string;
   };
-}
+} 
 // Middleware to verify JWT token
 export const verifyToken = (
   req: Request,

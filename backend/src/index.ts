@@ -12,7 +12,7 @@ import "./config/env.js";
 // Start the server
 const PORT = process.env.PORT || 5000;
 
-// Listen on the specified port
+// Listen on the specified port, meaning the server is ready to accept incoming requests.
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

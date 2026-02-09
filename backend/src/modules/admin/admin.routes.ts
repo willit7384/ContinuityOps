@@ -1,4 +1,4 @@
-// Admin Protected Routes: Routes for admin functionalities like user management and audit logs
+// Admin Protected Routes: Routes for admin functionalities like user management and audit logs 
 
 // Express router
 import { Router } from "express";
@@ -16,8 +16,12 @@ import { listAuditLogs } from "./admin.controller.js";
 
 // Create router
 const router = Router();
+
+// Beneath are the admin protected routes
+
 // Get all users
 router.get("/users", verifyToken, blockSuspendedUser, requireRole(["ADMIN"]), getAllUsers);
+
 // List audit logs
 router.get(
   "/audit-logs",
@@ -25,6 +29,7 @@ router.get(
   requireRole(["ADMIN"]),
   listAuditLogs
 );
+
 // Update user role
 router.patch(
   "/users/:id/role",
@@ -33,5 +38,6 @@ router.patch(
   requireRole(["ADMIN"]),
   updateUserRole
 );
+
 // Export router
 export default router;

@@ -1,4 +1,4 @@
-// Admin controller: Handles admin functionalities like user management and audit logs
+// Admin controller: Handles admin functionalities like user management and audit logs 
 
 import { Request, Response } from "express";
 // Prisma client

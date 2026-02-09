@@ -1,5 +1,5 @@
 // This middleware checks if a user is suspended and blocks access if so
-
+ 
 // Express types
 import { Request, Response, NextFunction } from "express";
 // Prisma client

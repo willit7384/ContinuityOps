@@ -18,14 +18,21 @@ import { verifyToken } from "../../middlewares/auth.middleware.js";
 import { blockSuspendedUser } from "../../middlewares/suspension.middleware.js";
 // Role-based access control middleware
 import { requireRole } from "../../middlewares/role.middleware.js";
+
 // Create router
 const router = express.Router();
-// Public routes
+
+// Public routes for users
+
+// Registration route
 router.post("/register", createUserController);
+
 // Login route
 router.post("/login", loginController);
+
 // Protected routes
 router.use(verifyToken, blockSuspendedUser); // all routes below require auth
+
 // Admin routes
 router.get("/", requireRole(["ADMIN"]), listUsersController); // List all users
 router.patch("/:id/role", requireRole(["ADMIN"]), updateRoleController); // Update user role
